@@ -15,8 +15,8 @@ p_phase=0#np.pi/6 #constant phase from plasma const
 L=spc.c/Df #the length will not change
 
 
-TODO TODO
-MAKE IT LIKE THE GEN.PL, THE FBASE CHANGES
+#TODO TODO
+#MAKE IT LIKE THE GEN.PL, THE FBASE CHANGES
 #---Func---
 
 #def dispers(t,p):
@@ -41,6 +41,8 @@ freq=np.empty(samp)#freq data gen container
 freq[:]=fmod #assign value
 freq[500000:600000]=5.1e5
 #PLACEHOLDER Df could have a data space too, if it is expected to change
+freq_d=np.empty(samp) #freq data for the fbase for dispersion line
+freq_r=np.empty(samp) #freq data for the fbase for refline
 #f1=dispers #store functions as objects, to call them less often
 #f2=refline
 
@@ -51,8 +53,22 @@ freq[500000:600000]=5.1e5
 #    if(np.abs(data[i-1,1])>np.abs(data[i,1]) and np.abs(data[i,1])<np.abs(data[i+1,1]):
 #        data[i,0] #and multiply it by fmod or freq ???
 
+#-----SAW-TOOTH DATA freq GEN-----
+f_d=fbase
+f_r=fbase+L/spc.c*Df*freq[1] #initial freq refline is ahead freq dispers
+for i in xrange(samp):
+    df_saw=Df*dt*freq[i] #calculate freq mod diff in step
+    f_r+=df_saw
+    if(f_r>=fbase+Df): #if modulation peak reached
+            f_r=fbase
+    f_d+=df_saw
+    if(f_d>=fbase+Df): #if modulation peak reached
+            f_d=fbase
+    freq_d[i]=f_d
+    freq_r[i]=f_r
+
 #-----MIXING DIODE-----
-mixer=np.sin(time*2*np.pi*(fbase+freq))+np.sin(time*2*np.pi*fbase+p_phase) #refline()+dispers()
+mixer=np.sin(time*2*np.pi*freq_r)+np.sin(time*2*np.pi*freq_d+p_phase) #refline()+dispers()
 #plt.plot(time[:],mixer[:])
 #plt.show()
 
