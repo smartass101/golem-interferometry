@@ -5,7 +5,7 @@
 
 from scipy import pi #used in sin() funcs
 from scipy.optimize import leastsq #the least square analyzer
-from numpy import loadtxt, sin, floor #for loadidng the file and for sin() and rounding
+from numpy import loadtxt, sin, floor, empty #for loadidng the file and for sin() and rounding, empty() for data 
 
 ################ PARAMETERS ################
 
@@ -14,16 +14,6 @@ A_base=0.05 #the expected amplitude of the singal
 fname='ch1.csv'#file with the sine signal
 start_per=5 #how many periods to scan to obtain first approximation of parameters
 p0=[A_base, fbase, 0] #initial parameter sequnce to be passed to the leastsq
-
-################ FILE OPENING ################
-
-data_file=open(fname, 'r') #open data file read-only
-x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
-
-################ CALCULATED PARAMETERS ################
-
-dt=x[1] - x[0] #calculate the time step
-period_len=len(x) * dt * f_base #calculate the number of points in one period
 
 ################ HELPER FUNCTIONS ################
 
@@ -58,9 +48,17 @@ def fit_sample(params0, start, length=period_len/4):
     else :
         params[2]=rephase(params[2]) #make sure it's the base phase
         if params[0] < 0 : #if the fitting resulted in negative amplitude
-            params[2] += pi #add PI to cncel out the fitting to negative amplitude
+            params[2] += pi #add PI to cancel out the fitting to negative amplitude
         return params
+
+################ FILE OPENING ################
+
+data_file=open(fname, 'r') #open data file read-only
+x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
 
 ################ INITIAL ANALYSIS ################
 
+dt=x[1] - x[0] #calculate the time step
+period_len=len(x) * dt * f_base #calculate the number of points in one period
 p0=fit_sample(p0, 0, period_len * start_per) #update the initial parametrs 
+
