@@ -13,7 +13,7 @@ f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
 A_base=0.05 #the expected amplitude of the singal
 fname='ch1.csv'#file with the sine signal
 start_per=5 #how many periods to scan to obtain first approximation of parameters
-p0=[A_base, fbase, 0] #initial parameter sequnce to be passed to the leastsq
+p0=[A_base, f_base, 0] #initial parameter sequnce to be passed to the leastsq
 
 ################ HELPER FUNCTIONS ################
 
@@ -35,10 +35,10 @@ def fitfunc(params, xdata, ydata):
     """
     return ydata - params[0] * sin(2 * pi * params[1] * xdata + params[2])
 
-def fit_sample(params0, start, length=period_len/4):
+def fit_sample(params0, start, length):
     """fit_sample(params0, start, length) -> params
 
-    fits a sample begining at start of specified data point length (defaults to one forth of the period length), including the starting point
+    fits a sample begining at start of specified data point length, including the starting point
     with initial parameters sequence params0 and returns a sequence of obtained parameters
     params and params0 sequence: [amplitude, frequency, phase]
     """
