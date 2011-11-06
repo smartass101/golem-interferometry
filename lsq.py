@@ -79,6 +79,11 @@ freq=empty(roots) #fitted frequency data container
 root_idx=0 #curretn index of root that is being processed
 for idx in xrange(fit_distance, len(x)): #go through all data, offset due to fitting smaple width, use idx for sync
     if y[idx] * y[idx+1] <= 0: #if the product is negative, there is a root between them
-        p1=fit_sample(p0, idx - fit_distance, 2*fit_distance)
-        phase[root_idx]=p1[2]
-        freq[root_idx]=p1[1]
+        try: #fitting may raise RuntimeError
+            p1=fit_sample(p0, idx - fit_distance, 2*fit_distance)
+            phase[root_idx]=p1[2]
+            freq[root_idx]=p1[1]
+        except RuntimeError:
+            phase[root_idx]=freq[root_idx]=50 #debugging value
+        finally: #the root_idx has to be incremented always
+            root_idx += 1 #increment for next root
