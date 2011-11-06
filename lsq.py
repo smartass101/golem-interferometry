@@ -11,7 +11,7 @@ from numpy import loadtxt, sin, floor, empty #for loadidng the file and for sin(
 
 f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
 A_base=0.05 #the expected amplitude of the singal
-fname='ch1.csv'#file with the sine signal
+fname='sin.csv'#file with the sine signal
 start_per=5 #how many periods to scan to obtain first approximation of parameters
 p0=[A_base, f_base, 0] #initial parameter sequnce to be passed to the leastsq
 
@@ -42,23 +42,29 @@ def fit_sample(params0, start, length):
     with initial parameters sequence params0 and returns a sequence of obtained parameters
     params and params0 sequence: [amplitude, frequency, phase]
     """
-    params, ok = leastsq(fitfunc, params0, args(x[start:start + length], y[start:start + length]))
+    params, ok = leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
     if ok > 4 : #if the fitting didn't succeed
         raise RuntimeError 
     else :
         params[2]=rephase(params[2]) #make sure it's the base phase
         if params[0] < 0 : #if the fitting resulted in negative amplitude
-            params[2] += pi #add PI to cancel out the fitting to negative amplitude
+            params[0] *= -1 #negate the amplitude
+            if params[2] < pi: 
+                params[2] += pi #add PI to cancel out the fitting to negative amplitude
+            else: #phase is greater than PI
+                params[2] -= pi #substract pi to cansel out negative amplitude
         return params
 
 ################ FILE OPENING ################
 
 data_file=open(fname, 'r') #open data file read-only
 x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
+print "Data loaded"
 
 ################ INITIAL ANALYSIS ################
 
 dt=x[1] - x[0] #calculate the time step
-period_len=len(x) * dt * f_base #calculate the number of points in one period
+period_len=round(1 / dt / f_base) #calculate the number of points in one period
 p0=fit_sample(p0, 0, period_len * start_per) #update the initial parametrs 
 
+print "Initial parameters [ampltude, frequency, phase]: ",p0
