@@ -68,7 +68,7 @@ dt=x[1] - x[0] #calculate the time step
 period_len=round(1 / dt / f_base) #calculate the number of points in one period
 p0=fit_sample(p0, 0, period_len * start_per) #update the initial parametrs 
 roots=len(x) / period_len * 2 #calculate the expected number of roots along the way
-fit_distance=round(period_len / fit_per_frac) #max distance of fitted points from root
+fit_distance=int(round(period_len / fit_per_frac)) #max distance of fitted points from root
 print "Initial parameters [amplitude, frequency, phase]: ",p0
 
 ################ DATA GENERATION ################
