@@ -34,3 +34,14 @@ def rephase(phase):
     """
     periods=floor(phase / (2 * pi)) #get the number of periods in phase
     return phase - periods * 2 *pi #return the pahse without the periods 
+
+################ FUNCTIONS ################
+
+def fitfunc(params, xdata, ydata):
+    """fitfunc(parameters, xdata, ydata) -> ydelta
+
+    return the difference of the ydata and the calculated data using xdata and parameters sequence
+    the parameters sequence consists of: [amplitude, frequency, phase]
+    """
+    return ydata - params[0] * sin(2 * pi * params[1] * xdata + params[2])
+
