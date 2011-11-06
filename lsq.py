@@ -14,3 +14,10 @@ A_base=0.05 #the expected amplitude of the singal
 fname='ch1.csv'#file with the sine signal
 start_per=5 #how many periods to scan to obtain first approximation of parameters
 p0=[A_base, fbase, 0] #initial parameter sequnce to be passed to the leastsq
+
+################ FILE OPENING ################
+
+data_file=open(fname, 'r') #open data file read-only
+x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
+
+
