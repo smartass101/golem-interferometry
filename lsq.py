@@ -13,6 +13,7 @@ f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
 A_base=0.05 #the expected amplitude of the singal
 fname='sin.csv'#file with the sine signal
 start_per=5 #how many periods to scan to obtain first approximation of parameters
+fit_per_frac= 4 #maximum time distance from root to points in fitted sample given by the fraction of the period
 p0=[A_base, f_base, 0] #initial parameter sequnce to be passed to the leastsq
 
 ################ HELPER FUNCTIONS ################
@@ -66,5 +67,18 @@ print "Data loaded"
 dt=x[1] - x[0] #calculate the time step
 period_len=round(1 / dt / f_base) #calculate the number of points in one period
 p0=fit_sample(p0, 0, period_len * start_per) #update the initial parametrs 
+roots=len(x) / period_len * 2 #calculate the expected number of roots along the way
+fit_distance=round(period_len / fit_per_frac) #max distance of fitted points from root
+print "Initial parameters [amplitude, frequency, phase]: ",p0
 
-print "Initial parameters [ampltude, frequency, phase]: ",p0
+################ DATA GENERATION ################
+
+phase=empty(roots) #fitted phase data container
+freq=empty(roots) #fitted frequency data container
+
+root_idx=0 #curretn index of root that is being processed
+for idx in xrange(fit_distance, len(x)): #go through all data, offset due to fitting smaple width, use idx for sync
+    if y[idx] * y[idx+1] <= 0: #if the product is negative, there is a root between them
+        p1=fit_sample(p0, idx - fit_distance, 2*fit_distance)
+        phase[root_idx]=p1[2]
+        freq[root_idx]=p1[1]
