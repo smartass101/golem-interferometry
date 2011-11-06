@@ -5,7 +5,7 @@
 
 from scipy import pi #used in sin() funcs
 from scipy.optimize import leastsq #the least square analyzer
-from numpy import loadtxt, sin #for loadidng the file and for sin()
+from numpy import loadtxt, sin, floor #for loadidng the file and for sin() and rounding
 
 ################ PARAMETERS ################
 
@@ -24,3 +24,13 @@ x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
 
 dt=x[1] - x[0] #calculate the time step
 period_len=len(x) * dt * f_base #calculate the number of points in one period
+
+################ HELPER FUNCTIONS ################
+
+def rephase(phase):
+    """rephase(phase) -> phase0
+
+    return the phase without the k*2PI period
+    """
+    periods=floor(phase / (2 * pi)) #get the number of periods in phase
+    return phase - periods * 2 *pi #return the pahse without the periods 
