@@ -20,4 +20,7 @@ p0=[A_base, fbase, 0] #initial parameter sequnce to be passed to the leastsq
 data_file=open(fname, 'r') #open data file read-only
 x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
 
+################ CALCULATED PARAMETERS ################
 
+dt=x[1] - x[0] #calculate the time step
+period_len=len(x) * dt * f_base #calculate the number of points in one period
