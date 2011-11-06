@@ -48,10 +48,11 @@ def fitfunc(params, xdata, ydata):
 def fit_sample(params0, start, length=period_len/4):
     """fit_sample(params0, start, length) -> params
 
-    fits a sample begining at start of specified data point length (defaults to one forth of the period length) with initial parameters sequence params0 and returns a sequence of obtained parameters
+    fits a sample begining at start of specified data point length (defaults to one forth of the period length), including the starting point
+    with initial parameters sequence params0 and returns a sequence of obtained parameters
     params and params0 sequence: [amplitude, frequency, phase]
     """
-    params, ok = leastsq(fitfunc, params0, args(x, y))
+    params, ok = leastsq(fitfunc, params0, args(x[start:start + length], y[start:start + length]))
     if ok > 4 : #if the fitting didn't succeed
         raise RuntimeError 
     else :
@@ -60,3 +61,6 @@ def fit_sample(params0, start, length=period_len/4):
             params[2] += pi #add PI to cncel out the fitting to negative amplitude
         return params
 
+################ INITIAL ANALYSIS ################
+
+p0=fit_sample(p0, 0, period_len * start_per) #update the initial parametrs 
