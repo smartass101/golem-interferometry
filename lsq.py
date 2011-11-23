@@ -43,9 +43,10 @@ def fit_sample(params0, start, length):
     with initial parameters sequence params0 and returns a sequence of obtained parameters
     params and params0 sequence: [amplitude, frequency, phase]
     """
-    params, ok = leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
+    params, ok, msg = leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
     if ok > 4 : #if the fitting didn't succeed
-        raise RuntimeError 
+        print msg
+        raise RuntimeError
     else :
         params[2]=rephase(params[2]) #make sure it's the base phase
         if params[0] < 0 : #if the fitting resulted in negative amplitude
@@ -76,7 +77,7 @@ print "Initial parameters [amplitude, frequency, phase]: ",p0
 phase=empty(roots) #fitted phase data container
 freq=empty(roots) #fitted frequency data container
 
-root_idx=0 #curretn index of root that is being processed
+root_idx=0 #current index of root that is being processed
 for idx in xrange(fit_distance, len(x)): #go through all data, offset due to fitting smaple width, use idx for sync
     if y[idx] * y[idx+1] <= 0: #if the product is negative, there is a root between them
         try: #fitting may raise RuntimeError
