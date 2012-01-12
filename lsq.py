@@ -43,9 +43,8 @@ def fit_sample(params0, start, length):
     with initial parameters sequence params0 and returns a sequence of obtained parameters
     params and params0 sequence: [amplitude, frequency, phase]
     """
-    params, ok, msg = leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
+    params, ok= leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
     if ok > 4 : #if the fitting didn't succeed
-        print msg
         raise RuntimeError
     else :
         params[2]=rephase(params[2]) #make sure it's the base phase
