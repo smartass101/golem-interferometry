@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 """fit the sine signal with a sine function using the least squares method"""
-
+debug=True
 ################ IMPORTING ################
 
 from scipy import pi #used in sin() funcs
@@ -52,6 +52,16 @@ def fit_sample(params0, start, length):
         else: #phase is greater than PI
             params[2] -= pi #substract pi to cansel out negative amplitude
     return params
+
+################ DEBUGGING WRAPPERS ################
+
+if debug:
+    import matplotlib.pyplot as plt
+    def compare_fit(start,length):
+        plt.plot(x[start:start + length], y[start:start + length], 'r+')
+        parms=fit_sample(p0,start,length)
+        plt.plot(x[start:start + length], y[start:start + length] - fitfunc(parms,x[start:start + length], y[start:start + length] ) , 'b+')
+        plt.show()
 
 ################ FILE OPENING ################
 
