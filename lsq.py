@@ -12,6 +12,7 @@ from numpy import loadtxt, sin, floor, nditer #for loadidng the file and for sin
 f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
 A_base=0.05 #the expected amplitude of the singal
 input_fname='sin.csv'#file with the sine signal
+output_fname="phase.csv"
 start_per=5 #how many periods to scan to obtain first approximation of parameters
 fit_per_frac= 1./4 #maximum time distance from root to points in fitted sample given by the fraction of the period
 p0=[A_base, f_base, 0] #initial parameter sequnce to be passed to the leastsq
@@ -77,6 +78,8 @@ else: #first run in session, must load data
     x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
     print "Data loaded"
 
+output_file = open(output_fname, 'w')
+
 ################ INITIAL ANALYSIS ################
 
 dt=x[1] - x[0] #calculate the time step
@@ -94,4 +97,5 @@ maxidx_y = len(y) -1 #use a static value, so len() is not called so often
 while not iterator.finished : #until we find them all
     if iterator.index < maxidx_y and iterator[0] * y[iterator.index + 1] <= 0: # root found, the previous check is a cut-off safety check for index overflow
         p1 = fit_sample(p0, iterator.index - fit_distance, 2 * fit_distance + 1 ) #fit the sample with this width + 1 point for the root in the middle
-        
+        output_file.write(str(x[iterator.index]) + ',' + str(p1[2]) + "\n")
+    iterator.iternext()
