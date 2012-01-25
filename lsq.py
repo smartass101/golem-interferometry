@@ -107,7 +107,7 @@ points_buffer = [] # initialize an empty list
 
 ################ INITIAL ANALYSIS ################
 
-update_lines(2) #for the first two points, to determine dt
+append_lines(2) #for the first two points, to determine dt
 dt = points_buffer[1][0] - points_buffer[0][0] #calculate the time step
 period_len = round(1 / dt / f_base) #calculate the number of points in one period
 fit_distance=int(round(period_len * fit_per_frac)) #max distance of fitted points from root
