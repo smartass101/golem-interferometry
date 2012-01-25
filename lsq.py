@@ -118,7 +118,7 @@ print "Initial parameters [amplitude, frequency, phase]: ",p0
 
 ################ DATA GENERATION ################
             
-after_root = fit_distance +1  #points filled into points_buffer array after root
+after_root == fit_distance +1  #points filled into points_buffer array after root
 # initialized like this so that initially only the last test case is triggered
 
 for line in data_file: #loop over each line in file
