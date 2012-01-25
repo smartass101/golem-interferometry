@@ -47,6 +47,8 @@ def fit_sample(params0, start, length):
     params and params0 sequence: [amplitude, frequency, phase]
     """
     try:
+        if start < 0: #too hard to debug, so don't support it
+            raise IndexError
         params, ok= leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
         params[2]=rephase(params[2]) #make sure it's the base phase
         if params[0] < 0 : #if the fitting resulted in negative amplitude
