@@ -12,6 +12,7 @@ from numpy import loadtxt, sin, floor, empty #for loadidng the file and for sin(
 f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
 A_base=0.05 #the expected amplitude of the singal
 fname='sin.csv'#file with the sine signal
+output_name='phase.csv'
 start_per=5 #how many periods to scan to obtain first approximation of parameters
 fit_per_frac= 1./4 #maximum time distance from root to points in fitted sample given by the fraction of the period
 p0=[A_base, f_base, 0] #initial parameter sequnce to be passed to the leastsq
@@ -27,6 +28,17 @@ def rephase(phase):
     """
     periods=floor(phase / (2 * pi)) #get the number of periods in phase
     return phase - periods * 2 *pi #return the pahse without the periods 
+
+def update_line(line):
+    """update_line(line)
+
+    Push a line from the CSV formatted file into the points_buffer array
+    and pop out the last point in the array
+    """
+    time, value = line.split(',') #first get the strings
+    time, value = float(time), float(value) #make them into floats
+    points_buffer.pop() #let the last point go
+    points_buffer.push([time, value]) #push in the new point list
 
 ################ FUNCTIONS ################
 
@@ -71,8 +83,7 @@ if debug:
 ################ FILE OPENING ################
 
 data_file=open(fname, 'r') #open data file read-only
-x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
-print "Data loaded"
+output_file = open(output_name, 'w') #open output file write-only
 
 ################ INITIAL ANALYSIS ################
 
@@ -85,7 +96,7 @@ print "Initial parameters [amplitude, frequency, phase]: ",p0
 
 ################ DATA GENERATION ################
 
-points_buffer = empty((2*fit_distance + 1, 2)) # the points buffer has the root and a certain number of points on each side
+points_buffer = [] # initialize an empty list
 phase=empty(roots) #fitted phase data container
 freq=empty(roots) #fitted frequency data container
 
