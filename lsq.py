@@ -80,17 +80,14 @@ def fit_sample(params0):
     params and params0 sequence: [amplitude, frequency, phase]
     """
     params, ok= leastsq(fitfunc, params0, args=(points_buffer[:, 0], points_buffer[:, 1])) #fit with the points_buffer
-    if ok > 4 : #if the fitting didn't succeed
-        raise RuntimeError("fit exited with error "+str(ok)+" at fit from point "+str(start)+" to "+str(length))
-    else :
-        params[2]=rephase(params[2]) #make sure it's the base phase
-        if params[0] < 0 : #if the fitting resulted in negative amplitude
-            params[0] *= -1 #negate the amplitude
-            if params[2] < pi: 
-                params[2] += pi #add PI to cancel out the fitting to negative amplitude
-            else: #phase is greater than PI
-                params[2] -= pi #substract pi to cansel out negative amplitude
-        return params
+    params[2]=rephase(params[2]) #make sure it's the base phase
+    if params[0] < 0 : #if the fitting resulted in negative amplitude
+        params[0] *= -1 #negate the amplitude
+        if params[2] < pi: 
+            params[2] += pi #add PI to cancel out the fitting to negative amplitude
+        else: #phase is greater than PI
+            params[2] -= pi #substract pi to cansel out negative amplitude
+    return params
 
 ################ DEBUGGING WRAPPERS ################
 
