@@ -45,10 +45,8 @@ def fit_sample(params0, start, length):
     with initial parameters sequence params0 and returns a sequence of obtained parameters
     params and params0 sequence: [amplitude, frequency, phase]
     """
-    params, ok= leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
-    if ok > 4 : #if the fitting didn't succeed
-        raise RuntimeError("fit exited with error "+str(ok)+" at fit from point "+str(start)+" to "+str(length))
-    else :
+    try:
+        params, ok= leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
         params[2]=rephase(params[2]) #make sure it's the base phase
         if params[0] < 0 : #if the fitting resulted in negative amplitude
             params[0] *= -1 #negate the amplitude
@@ -57,6 +55,8 @@ def fit_sample(params0, start, length):
             else: #phase is greater than PI
                 params[2] -= pi #substract pi to cansel out negative amplitude
         return params
+    except IndexError:
+        pass #nothing to do here, just wait for next root
 
 ################ DEBUGGING WRAPPERS ################
 
@@ -93,4 +93,5 @@ iterator = nditer(y, flags=['c_index']) #generate an iterator object that will s
 maxidx_y = len(y) -1 #use a static value, so len() is not called so often
 while not iterator.finished : #until we find them all
     if iterator.index < maxidx_y and iterator[0] * y[iterator.index + 1] <= 0: # root found, the previous check is a cut-off safety check for index overflow
-        p1 = fit_sample(p0, iterator.index))
+        p1 = fit_sample(p0, iterator.index - fit_distance, 2 * fit_distance + 1 ) #fit the sample with this width + 1 point for the root in the middle
+        
