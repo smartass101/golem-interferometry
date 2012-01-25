@@ -70,8 +70,8 @@ def fitfunc(params, xdata, ydata):
 
     return the difference of the ydata and the calculated data using xdata and parameters sequence
     the parameters sequence consists of: [amplitude, frequency, phase]
-    """
-    return ydata - params[0] * sin(2 * pi * params[1] * xdata + params[2])
+    """ 
+    return [ y - params[0] * sin(2 * pi * params[1] * x + params[2]) for y in ydata for x in xdata]
 
 def fit_sample(params0):
     """fit_sample(params0) -> params
