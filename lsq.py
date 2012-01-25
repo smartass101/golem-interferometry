@@ -21,7 +21,9 @@ p0=[A_base, f_base, 0] #initial parameter sequnce to be passed to the leastsq
 def rephase(phase):
     """rephase(phase) -> phase0
 
-    return the phase without the k*2PI period
+    Return the phase without the k*2PI period.
+
+    The phase is expected to be in radians.
     """
     periods=floor(phase / (2 * pi)) #get the number of periods in phase
     return phase - periods * 2 *pi #return the pahse without the periods 
