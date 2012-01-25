@@ -60,7 +60,8 @@ def append_lines(count):
     Similiar to :func:`update_lines`, but does not call pop().
     Used mainly for initial population of the points_buffer array.
     """
-    points_buffer.append(unpack(line)) #append the new point list
+    for i in xrange(count):
+        points_buffer.append(unpack(data_file.readline())) #append the new point list
         
 ################ FUNCTIONS ################
 
