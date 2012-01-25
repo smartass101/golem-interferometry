@@ -5,7 +5,7 @@ debug=True
 
 from scipy import pi #used in sin() funcs
 from scipy.optimize import leastsq #the least square analyzer
-from numpy import loadtxt, sin, floor, empty #for loadidng the file and for sin() and rounding, empty() for data 
+from numpy import loadtxt, sin, floor, nditer #for loadidng the file and for sin() and rounding, nditer() for looping over data
 
 ################ PARAMETERS ################
 
@@ -82,23 +82,15 @@ else: #first run in session, must load data
 dt=x[1] - x[0] #calculate the time step
 period_len=round(1 / dt / f_base) #calculate the number of points in one period
 p0=fit_sample(p0, 0, period_len * start_per) #update the initial parametrs 
-roots=len(x) / period_len * 2 #calculate the expected number of roots along the way
 fit_distance=int(round(period_len * fit_per_frac)) #max distance of fitted points from root
 print "Initial parameters [amplitude, frequency, phase]: ",p0
 
 ################ DATA GENERATION ################
 
-phase=empty(roots) #fitted phase data container
-freq=empty(roots) #fitted frequency data container
 
-root_idx=0 #current index of root that is being processed
-for idx in xrange(fit_distance, len(x)): #go through all data, offset due to fitting smaple width, use idx for sync
-    if y[idx] * y[idx+1] <= 0: #if the product is negative, there is a root between them
-        try: #fitting may raise RuntimeError
-            p1=fit_sample(p0, idx - fit_distance, 2*fit_distance)
-            phase[root_idx]=p1[2]
-            freq[root_idx]=p1[1]
-        except RuntimeError:
-            phase[root_idx]=freq[root_idx]=50 #debugging value
-        finally: #the root_idx has to be incremented always
-            root_idx += 1 #increment for next root
+
+iterator = nditer(y, flags=['c_index']) #generate an iterator object that will store the index in C order
+maxidx_y = len(y) -1 #use a static value, so len() is not called so often
+while not iterator.finished : #until we find them all
+    if iterator.index < maxidx_y and iterator[0] * y[iterator.index + 1] <= 0: # root found, the previous check is a cut-off safety check for index overflow
+        p1 = fit_sample(p0, iterator.index))
