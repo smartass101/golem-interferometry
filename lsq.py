@@ -118,13 +118,13 @@ print "Initial parameters [amplitude, frequency, phase]: ",p0
 
 ################ DATA GENERATION ################
             
-after_root == fit_distance +1  #points filled into points_buffer array after root
+after_root = fit_distance +1  #points filled into points_buffer array after root
 # initialized like this so that initially only the last test case is triggered
 
 for line in data_file: #loop over each line in file
     if  after_root < fit_distance: # just adding the points after root
         after_root += 1 #increment filling up
-    elif after_root = fit_distance:
+    elif after_root == fit_distance:
         after_root += 1 #increment filling up, to make sure that it jumps to the last test case in next cycle
         p1=fit_sample(p0)
         output_file.write(str(points_buffer[-1 - fit_sample][0]) + ',' + str(p1[2]) + "\n") #write the phase with the time of the root occurrence
