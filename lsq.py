@@ -128,7 +128,7 @@ for line in data_file: #loop over each line in file
     elif after_root == fit_distance:
         after_root += 1 #increment filling up, to make sure that it jumps to the last test case in next cycle
         p1=fit_sample(p0)
-        output_file.write(str(points_buffer[-1 - fit_sample][0]) + ',' + str(p1[2]) + "\n") #write the phase with the time of the root occurrence
+        output_file.write(str(points_buffer[-1 - fit_distance][0]) + ',' + str(p1[2]) + "\n") #write the phase with the time of the root occurrence
     elif points_buffer[-1][1] * points_buffer[-2][1] <= 0: #if not just filling up, check if a root could be between
         after_root = 0 #reset filling
         
