@@ -13,6 +13,7 @@ f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
 A_base=0.05 #the expected amplitude of the singal
 fname='sin.csv'#file with the sine signal
 output_name='phase.csv'
+out_freq_name = "freq.csv"
 start_per=5 #how many periods to scan to obtain first approximation of parameters
 fit_per_frac= 1./4 #maximum time distance from root to points in fitted sample given by the fraction of the period
 p0=[A_base, f_base, 0] #initial parameter sequnce to be passed to the leastsq
@@ -104,7 +105,9 @@ if debug:
 
 data_file=open(fname, 'r') #open data file read-only
 output_file = open(output_name, 'w') #open output file write-only
+out_freq_file = open(out_freq_name ,'w')
 points_buffer = [] # initialize an empty list
+
 
 ################ INITIAL ANALYSIS ################
 
@@ -129,6 +132,7 @@ for line in data_file: #loop over each line in file
         after_root += 1 #increment filling up, to make sure that it jumps to the last test case in next cycle
         p1=fit_sample(p0)
         output_file.write(str(points_buffer[-1 - fit_distance][0]) + ',' + str(p1[2]) + "\n") #write the phase with the time of the root occurrence
+                out_freq_file.write(str(points_buffer[-1 - fit_distance][0]) + ',' + str(p1[1]) + "\n") #write the frequency with the time of the root occurrence
     elif points_buffer[-1][1] * points_buffer[-2][1] <= 0: #if not just filling up, check if a root could be between
         after_root = 0 #reset filling
         
