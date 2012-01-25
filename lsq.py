@@ -11,7 +11,7 @@ from numpy import loadtxt, sin, floor, empty #for loadidng the file and for sin(
 
 f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
 A_base=0.05 #the expected amplitude of the singal
-fname='sin.csv'#file with the sine signal
+input_fname='sin.csv'#file with the sine signal
 start_per=5 #how many periods to scan to obtain first approximation of parameters
 fit_per_frac= 1./4 #maximum time distance from root to points in fitted sample given by the fraction of the period
 p0=[A_base, f_base, 0] #initial parameter sequnce to be passed to the leastsq
@@ -68,11 +68,14 @@ if debug:
         plt.plot(x[start:start + length], y[start:start + length] - fitfunc(parms,x[start:start + length], y[start:start + length] ) , 'b+')
         plt.show()
 
-################ FILE OPENING ################
+################ FILE OPENING AND DATA LOADING ################
 
-data_file=open(fname, 'r') #open data file read-only
-x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
-print "Data loaded"
+data_file=open(input_fname, 'r') #open data file read-only
+if globals().has_key('x'): #want to load data only once, so let's check if it's defined
+    print "Data have been loaded already"
+else: #first run in session, must load data
+    x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
+    print "Data loaded"
 
 ################ INITIAL ANALYSIS ################
 
