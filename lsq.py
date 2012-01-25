@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 """fit the sine signal with a sine function using the least squares method"""
-debug=True
+debug=False
 ################ IMPORTING ################
 
 from scipy import pi #used in sin() funcs
@@ -27,19 +27,41 @@ def rephase(phase):
     The phase is expected to be in radians.
     """
     periods=floor(phase / (2 * pi)) #get the number of periods in phase
-    return phase - periods * 2 *pi #return the pahse without the periods 
+    return phase - periods * 2 *pi #return the pahse without the periods
 
+def unpack(line):
+    """unpack(line) -> time, value
+
+    Unpack a line from a CSV formatted file and return it as a point pair.
+    """
+    time, value = line.split(',') #first get the strings
+    return float(time), float(value) #make them into floats
+    
 def update_line(line):
     """update_line(line)
 
     Push a line from the CSV formatted file into the points_buffer array
     and pop out the last point in the array
     """
-    time, value = line.split(',') #first get the strings
-    time, value = float(time), float(value) #make them into floats
     points_buffer.pop(0) #let the last (chronologically speaking, actually it's the first one in the stack)  point go 
-    points_buffer.append([time, value]) #append the new point list
+    points_buffer.append(unpack(line)) #append the new point list
 
+def update_lines(count):
+    """update_lines(count)
+
+    Call :func:`update_line` for the number of lines specified by the integer count argument
+    """
+    for i in xrange(count):
+        update_line(data_file.readline())
+
+def append_lines(count):
+    """append_lines(count)
+
+    Similiar to :func:`update_lines`, but does not call pop().
+    Used mainly for initial population of the points_buffer array.
+    """
+    points_buffer.append(unpack(line)) #append the new point list
+        
 ################ FUNCTIONS ################
 
 def fitfunc(params, xdata, ydata):
@@ -84,30 +106,32 @@ if debug:
 
 data_file=open(fname, 'r') #open data file read-only
 output_file = open(output_name, 'w') #open output file write-only
+points_buffer = [] # initialize an empty list
 
 ################ INITIAL ANALYSIS ################
 
-dt=x[1] - x[0] #calculate the time step
-period_len=round(1 / dt / f_base) #calculate the number of points in one period
-p0=fit_sample(p0, 0, period_len * start_per) #update the initial parametrs 
-roots=len(x) / period_len * 2 #calculate the expected number of roots along the way
+update_lines(2) #for the first two points, to determine dt
+dt = points_buffer[1][0] - points_buffer[0][0] #calculate the time step
+period_len = round(1 / dt / f_base) #calculate the number of points in one period
 fit_distance=int(round(period_len * fit_per_frac)) #max distance of fitted points from root
+
+append_lines(2 * fit_distance - 1) #read in so many lines, so that the points_buffer has a length of 2*fit_distance + 1 point for root (the two last points are subtracted
+p0=fit_sample(p0) #update the initial parametrs 
 print "Initial parameters [amplitude, frequency, phase]: ",p0
 
 ################ DATA GENERATION ################
+            
+after_root = fit_distance +1  #points filled into points_buffer array after root
+# initialized like this so that initially only the last test case is triggered
 
-points_buffer = [] # initialize an empty list
-phase=empty(roots) #fitted phase data container
-freq=empty(roots) #fitted frequency data container
-
-root_idx=0 #current index of root that is being processed
-for idx in xrange(fit_distance, len(x)): #go through all data, offset due to fitting smaple width, use idx for sync
-    if y[idx] * y[idx+1] <= 0: #if the product is negative, there is a root between them
-        try: #fitting may raise RuntimeError
-            p1=fit_sample(p0, idx - fit_distance, 2*fit_distance)
-            phase[root_idx]=p1[2]
-            freq[root_idx]=p1[1]
-        except RuntimeError:
-            phase[root_idx]=freq[root_idx]=50 #debugging value
-        finally: #the root_idx has to be incremented always
-            root_idx += 1 #increment for next root
+for line in data_file: #loop over each line in file
+    if  after_root < fit_distance: # just adding the points after root
+        after_root += 1 #increment filling up
+    elif after_root = fit_distance:
+        after_root += 1 #increment filling up, to make sure that it jumps to the last test case in next cycle
+        p1=fit_sample(p0)
+        output_file.write(str(points_buffer[-1 - fit_sample][0]) + ',' + str(p1[2]) + "\n") #write the phase with the time of the root occurrence
+    elif points_buffer[-1][1] * points_buffer[-2][1] <= 0: #if not just filling up, check if a root could be between
+        after_root = 0 #reset filling
+        
+    update_line(line) #add the new point
