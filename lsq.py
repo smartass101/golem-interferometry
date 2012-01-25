@@ -38,14 +38,14 @@ def fitfunc(params, xdata, ydata):
     """
     return ydata - params[0] * sin(2 * pi * params[1] * xdata + params[2])
 
-def fit_sample(params0, start, length):
-    """fit_sample(params0, start, length) -> params
+def fit_sample(params0):
+    """fit_sample(params0) -> params
 
-    fits a sample begining at start of specified data point length, including the starting point
-    with initial parameters sequence params0 and returns a sequence of obtained parameters
+    fits a sample in the points_buffer arrays with initial parameters sequence params0 and returns a sequence of obtained parameters
+    
     params and params0 sequence: [amplitude, frequency, phase]
     """
-    params, ok= leastsq(fitfunc, params0, args=(x[start:start + length], y[start:start + length]))
+    params, ok= leastsq(fitfunc, params0, args=(points_buffer[:, 0], points_buffer[:, 1])) #fit with the points_buffer
     if ok > 4 : #if the fitting didn't succeed
         raise RuntimeError("fit exited with error "+str(ok)+" at fit from point "+str(start)+" to "+str(length))
     else :
