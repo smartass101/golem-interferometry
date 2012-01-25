@@ -37,8 +37,8 @@ def update_line(line):
     """
     time, value = line.split(',') #first get the strings
     time, value = float(time), float(value) #make them into floats
-    points_buffer.pop() #let the last point go
-    points_buffer.push([time, value]) #push in the new point list
+    points_buffer.pop(0) #let the last (chronologically speaking, actually it's the first one in the stack)  point go 
+    points_buffer.append([time, value]) #append the new point list
 
 ################ FUNCTIONS ################
 
