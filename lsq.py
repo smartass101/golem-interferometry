@@ -85,7 +85,7 @@ print "Initial parameters [amplitude, frequency, phase]: ",p0
 
 ################ DATA GENERATION ################
 
-points_buffer = empty(2, 2*fit_distance + 1) # the points buffer has the root and a certain number of points on each side
+points_buffer = empty((2*fit_distance + 1, 2)) # the points buffer has the root and a certain number of points on each side
 phase=empty(roots) #fitted phase data container
 freq=empty(roots) #fitted frequency data container
 
