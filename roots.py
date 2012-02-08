@@ -52,7 +52,7 @@ D_phase = 0 #calculated phase change
 phase = 0 #calculated phase
 while not iterator.finished :
         if  iterator[0] * y[iterator.index + 1] <= 0: # root found
-            if x[iterator.index + 1] - x[iterator.iterator] > max_distance: #roots too far
+            if x[iterator.index + 1] - x[iterator.index] > max_distance: #roots too far
                 continue #TODO or could use this second "root" to calculate an even more precise root occurence
             else: #seems to be a legit root
                 roots += 1
