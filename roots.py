@@ -64,7 +64,7 @@ while not iterator.finished :
                 elif roots == 1: #this is the first root occurrence
                     global t_first = t
                 else: #that would be strange as the root count is incremented before this
-                    raise RuntimeError("root count out of range: " + str(roots))
+                    raise RuntimeError("root count out of range: {:d} maybe integer overrun -- to many roots?".format(roots))
                 t_last = t #store for future use
                         
 
