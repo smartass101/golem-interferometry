@@ -54,16 +54,14 @@ while not iterator.finished :
             else: #seems to be a legit root
                 roots += 1
                 t = x[iterator.index]
-                if roots > 2:
+                if roots > 1:
                     D_phase = pi - f_base * (t - t_last) #phase change
                     phase_integr += D_phase #integrate
                     if D_phase < 0: #implies that a whole period was skipped
                         roots += 1
                     phase = (roots-1) * pi - f_base * (t - t_first)
                     output_file.write("{:e},{:e},{:e}\n".format(t, phase, phase_integr)) #write to output file as CVS format
-                elif roots == 1: #this is the first root
-                    global t = x[iterator.index]
-                elif roots == 2: #this is the second root
+                elif roots == 1: #this is the first root occurrence
                     global t_first = t
                 else: #that would be strange as the root count is incremented before this
                     raise RuntimeError("root count out of range: " + str(roots))
