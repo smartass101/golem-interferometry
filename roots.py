@@ -50,8 +50,8 @@ t_first = 0 #occurrence of the first root
 iterator = nditer(y, flags=['c_index']) #generate an iterator object that will store the index in C order
 D_phase = 0 #calculated phase change
 phase = 0 #calculated phase
-while not iterator.finished :
-    try: #will catch IndexError on last point
+try: #will catch IndexError on last point
+    while not iterator.finished :
         if  iterator[0] * y[iterator.index + 1] <= 0: # root found
             if x[iterator.index + 1] - x[iterator.index] > max_distance: #roots too far
                 continue #TODO or could use this second "root" to calculate an even more precise root occurence
@@ -71,6 +71,6 @@ while not iterator.finished :
                     raise RuntimeError("root count out of range: {:d} maybe integer overrun -- too many roots?".format(roots))
                 t_last = t #store for future use
         iterator.iternext() #DO NOT forget this
-    except IndexError:
-        pass #this is expected
+except IndexError:
+    pass #this is expected
     
