@@ -69,7 +69,5 @@ while not iterator.finished :
                 else: #that would be strange as the root count is incremented before this
                     raise RuntimeError("root count out of range: {:d} maybe integer overrun -- too many roots?".format(roots))
                 t_last = t #store for future use
-                        
+        iterator.iternext() #DO NOT forget this
 
-#these are the roots for the initial phase
-                    
