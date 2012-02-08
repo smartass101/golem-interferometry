@@ -46,6 +46,7 @@ roots = 0 #root count
 phase_integr = 0 #phase calculated by integrating phace changes
 t = 0 # occurrence of the current root
 t_last = 0 #storing occurrence of the last root
+t_first = 0 #occurrence of the first root
 iterator = nditer(y, flags=['c_index']) #generate an iterator object that will store the index in C order
 D_phase = 0 #calculated phase change
 phase = 0 #calculated phase
@@ -64,7 +65,7 @@ while not iterator.finished :
                     phase = (roots-1) * pi - f_base * (t - t_first)
                     output_file.write("{:e},{:e},{:e}\n".format(t, phase, phase_integr)) #write to output file as CVS format
                 elif roots == 1: #this is the first root occurrence
-                    global t_first = t
+                    t_first = t
                 else: #that would be strange as the root count is incremented before this
                     raise RuntimeError("root count out of range: {:d} maybe integer overrun -- too many roots?".format(roots))
                 t_last = t #store for future use
