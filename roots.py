@@ -47,6 +47,8 @@ phase_integr = 0 #phase calculated by integrating phace changes
 t = 0 # occurrence of the current root
 t_last = 0 #storing occurrence of the last root
 iterator = nditer(y, flags=['c_index']) #generate an iterator object that will store the index in C order
+D_phase = 0 #calculated phase change
+phase = 0 #calculated phase
 while not iterator.finished :
         if  iterator[0] * y[iterator.index + 1] <= 0: # root found
             if x[iterator.index + 1] - x[iterator.iterator] > max_distance: #roots too far
