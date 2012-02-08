@@ -15,7 +15,7 @@ from numpy import loadtxt, nditer #for loadidng the file and for sin() and round
 f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
 A_base=0.05 #the expected amplitude of the singal
 input_fname='sin.csv'#file with the sine signal
-output_fname="phase.csv"
+output_fname="phase-roots.csv"
 debug=True
 
 ################################################################
