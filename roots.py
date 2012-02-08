@@ -57,7 +57,7 @@ try: #will catch IndexError on last point
                 continue #TODO or could use this second "root" to calculate an even more precise root occurence
             else: #seems to be a legit root
                 roots += 1
-                t = x[iterator.index]
+                t = x[iterator.index +1] - y[iterator.index +1] * (x[iterator.index +1] - x[iterator.index]) / (y[iterator.index +1] - y[iterator.index]) #calculate the precise root in between through the secant method
                 if roots > 1:
                     D_phase = pi - f_base * (t - t_last) #phase change
                     phase_integr += D_phase #integrate
