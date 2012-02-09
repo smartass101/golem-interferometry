@@ -12,8 +12,9 @@ from numpy import loadtxt, nditer #for loadidng the file and for sin() and round
 ####                        PARAMETERS                      ####
 ################################################################
 
-f_base=5e5 #the modulation frequency, the base frequancy of the sine signal
+f_base=5e5 #the modulation frequency, the base frequency of the sine signal
 A_base=0.05 #the expected amplitude of the singal
+omega_base = f_base * 2 * pi #base angula frequency of the sine signal
 input_fname='sin.csv'#file with the sine signal
 output_fname="phase-roots.csv"
 debug=True
@@ -59,11 +60,11 @@ try: #will catch IndexError on last point
                 roots += 1
                 t = x[iterator.index +1] - y[iterator.index +1] * (x[iterator.index +1] - x[iterator.index]) / (y[iterator.index +1] - y[iterator.index]) #calculate the precise root in between through the secant method
                 if roots > 1:
-                    D_phase = pi - f_base * (t - t_last) #phase change
+                    D_phase = pi - omega_base * (t - t_last) #phase change
                     phase_integr += D_phase #integrate
                     if D_phase < 0: #implies that a whole period was skipped
                         roots += 1
-                    phase = (roots-1) * pi - f_base * (t - t_first)
+                    phase = (roots-1) * pi - omega_base * (t - t_first)
                     output_file.write("{:e},{:e},{:e}\n".format(t, phase, phase_integr)) #write to output file as CVS format
                 elif roots == 1: #this is the first root occurrence
                     t_first = t
