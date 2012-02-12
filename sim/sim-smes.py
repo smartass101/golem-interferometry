@@ -81,6 +81,6 @@ fft[:]=0 #cut off all other freqs
 fft[amp]=amp_fft #put back freq band
 #fft[amp[len(amp)/2]]*=1000 #extra amplification of center band
 mix2=np.fft.irfft(fft) #inverse , clean data
-plt.plot(time,mix2)
-plt.show()
+#plt.plot(time,mix2)
+#plt.show()
 
