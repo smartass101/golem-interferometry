@@ -47,10 +47,8 @@ roots = 0 #root count
 phase_integr = 0 #phase calculated by integrating phace changes
 t = 0 # occurrence of the current root
 t_last = 0 #storing occurrence of the last root
-t_first = 0 #occurrence of the first root
 iterator = nditer(y, flags=['c_index']) #generate an iterator object that will store the index in C order
-D_phase = 0 #calculated phase change
-phase = 0 #calculated phase
+D_last_halfper = 0 #last root difference
 try: #will catch IndexError on last point
     while not iterator.finished :
         if  iterator[0] * y[iterator.index + 1] <= 0: # root found
@@ -59,17 +57,10 @@ try: #will catch IndexError on last point
             else: #seems to be a legit root
                 roots += 1
                 t = x[iterator.index +1] - y[iterator.index +1] * (x[iterator.index +1] - x[iterator.index]) / (y[iterator.index +1] - y[iterator.index]) #calculate the precise root in between through the secant method
-                if roots > 1:
-                    D_phase = pi - omega_base * (t - t_last) #phase change
-                    phase_integr += D_phase #integrate
-                    if D_phase < 0: #implies that a whole period was skipped
-                        roots += 1
-                    phase = (roots-1) * pi - omega_base * (t - t_first)
-                    output_file.write("{:e},{:e},{:e}\n".format(t, phase, phase_integr)) #write to output file as CVS format
-                elif roots == 1: #this is the first root occurrence
-                    t_first = t
-                else: #that would be strange as the root count is incremented before this
-                    raise RuntimeError("root count out of range: {:d} maybe integer overrun -- too many roots?".format(roots))
+                if roots > 2:
+                    phase_integr += pi * (D_last_halfper - t + t_last) / D_last_halfper #phase change
+                    output_file.write("{:e},{:e}\n".format(t, phase_integr)) #write to output file as CVS format
+                D_last_halfper = t - t_last #store for future use
                 t_last = t #store for future use
         iterator.iternext() #DO NOT forget this
 except IndexError:
