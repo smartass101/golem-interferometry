@@ -44,12 +44,16 @@ roots = [] #root array
 iterator = nditer((x, y), flags=['c_index']) #generate an iterator object that will store the index in C order
 x_last = x[0]
 y_last = y[0]
+root = 0
 root_last = x[0]
 while not iterator.finished:
-    if iterator[1] * y_last <= 0 and iterator[0] - root_last > max_distance: # root found and is far enough
-        root_last = iterator[0] - iterator[1] * (iterator[0] - x_last) / (iterator[1] - y_last) #calculate the precise root in between through the secant method
-        roots.append(root_last)
+    if iterator[1] * y_last <= 0:#root found 
+        root = iterator[0] - iterator[1] * (iterator[0] - x_last) / (iterator[1] - y_last) #calculate the precise root in between through the secant method
+        if root - root_last < max_distance: #too close (bad data sample)
+            root = (root - root_last) / 2
+        roots.append(root)
         x_last, y_last = iterator[0:2]
+        root_last = root
     iterator.iternext()
 roots = array(roots)
 phase = empty(len(roots) - 1)
