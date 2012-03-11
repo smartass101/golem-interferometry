@@ -76,7 +76,8 @@ while not iterator.finished:
     iterator.iternext()
 
 ################ SECOND PASS ################
-w_extra = (phase[-1] - phase[0]) / (roots[-1] - roots[2])
+edge = int(3e-3 / D_root) #expecting no plasma up to 3 ms
+w_extra = (phase[edge] - phase[0]) / (roots[edge] - roots[2])
 phase_0 = roots[2] * w_extra
 ## iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
 ## while not iterator.finished:
