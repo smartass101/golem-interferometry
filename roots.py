@@ -23,6 +23,7 @@ debug=True
 ################################################################
 
 data_file=open(input_fname, 'r') #open data file read-only
+output_file = open(output_fname, 'w')
 if globals().has_key('x'): #want to load data only once, so let's check if it's defined
     print "Data have been loaded already"
 else: #first run in session, must load data
@@ -34,37 +35,56 @@ else: #first run in session, must load data
 ################################################################
 
 dt=x[1] - x[0] #calculate the time step
-max_distance = 8 / f_base # minimum distance of roots, as a fraction of the period length
+max_distance = 1 / f_base /8 # minimum distance of roots, as a fraction of the period length
 
 ################################################################
 ####                  DATA EXTRACTION                       ####
 ################################################################
-
+discard_close_roots = True
 roots = [] #root array
-iterator = nditer((x, y), flags=['c_index']) #generate an iterator object that will store the index in C order
+iterator = nditer((x[1:], y[1:]), flags=['c_index']) #generate an iterator object that will store the index in C order
 x_last = x[0]
 y_last = y[0]
 root = 0
-root_last = x[0]
+root_last = x[0] * 4
 while not iterator.finished:
     if iterator[1] * y_last <= 0:#root found 
         root = iterator[0] - iterator[1] * (iterator[0] - x_last) / (iterator[1] - y_last) #calculate the precise root in between through the secant method
-        if root - root_last < max_distance: #too close (bad data sample)
-            root = (root - root_last) / 2
-        roots.append(root)
-        x_last, y_last = iterator[0:2]
+        if discard_close_roots and root - root_last < max_distance: #too close (bad data sample)
+            roots[-1] = (root + root_last) / 2 #recalculate the root
+        else:
+            roots.append(root)
         root_last = root
+    x_last, y_last = iterator[0], iterator[1]#:2]
     iterator.iternext()
 roots = array(roots)
-phase = empty(len(roots) - 1)
 
 ################################################################
 ####                 DATA GENERATION                        ####
 ################################################################
 
-w_extra = phase[-1,1] / (phase[-1,0] - phase[0,0])
+################ FIRST PASS ################
+D_root = roots[1] - roots[0]
+phase = empty(len(roots) - 2)
+iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
+t_expected = roots[1] + D_root
+w_base = pi / D_root
 
-for sample in phase:
-    sample[1] += sample[0] * w_extra
+while not iterator.finished:
+    iterator[1] = (t_expected - iterator[0]) * w_base
+    t_expected += D_root
+    iterator.iternext()
 
-savetxt(output_fname, phase)
+################ SECOND PASS ################
+w_extra = (phase[-1] - phase[0]) / (roots[-1] - roots[2])
+phase_0 = roots[2] * w_extra
+## iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
+## while not iterator.finished:
+##     iterator[1] += iterator[0] * w_base - phase_0
+##     #output_file.write("{},{}\n".format(iterator[0], iterator[1]))
+##     iterator.iternext()
+phase -= roots[2:] * w_extra - phase_0 #easier
+
+
+data_file.close()
+output_file.close()
