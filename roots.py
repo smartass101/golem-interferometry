@@ -72,20 +72,25 @@ w_base = pi / D_root
 
 while not iterator.finished:
     iterator[1] = (t_expected - iterator[0]) * w_base
-    t_expected += D_root
+    if iterator[0] - t_expected > 0:
+        t_expected += D_root
     iterator.iternext()
 
 ################ SECOND PASS ################
 edge = int(3e-3 / D_root) #expecting no plasma up to 3 ms
 w_extra = (phase[edge] - phase[0]) / (roots[edge] - roots[2])
 phase_0 = roots[2] * w_extra
-## iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
-## while not iterator.finished:
-##     iterator[1] += iterator[0] * w_base - phase_0
-##     #output_file.write("{},{}\n".format(iterator[0], iterator[1]))
-##     iterator.iternext()
-phase -= roots[2:] * w_extra - phase_0 #easier
+#phase -= roots[2:] * w_extra - phase_0 #easier
+iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
+while not iterator.finished:
+    #iterator[1] += iterator[0] * w_base - phase_0
+    #output_file.write("{},{}\n".format(iterator[0], iterator[1]))
+    iterator.iternext()
 
 
 data_file.close()
 output_file.close()
+
+import matplotlib.pylab as plt
+plt.plot(roots[2:], phase)
+plt.show()
