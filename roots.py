@@ -64,7 +64,7 @@ roots = array(roots)
 ################################################################
 
 ################ FIRST PASS ################
-D_root = roots[1] - roots[0]
+D_root = (roots[-1] - roots[0]) / roots.size#better approximation
 phase = empty(len(roots) - 2)
 iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
 t_expected = roots[1] + D_root
@@ -80,7 +80,7 @@ while not iterator.finished:
 edge = int(3e-3 / D_root) #expecting no plasma up to 3 ms
 w_extra = (phase[edge] - phase[0]) / (roots[edge] - roots[2])
 phase_0 = roots[2] * w_extra
-#phase -= roots[2:] * w_extra - phase_0 #easier
+phase -= roots[2:] * w_extra - phase_0 #easier
 iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
 while not iterator.finished:
     #iterator[1] += iterator[0] * w_base - phase_0
