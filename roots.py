@@ -14,7 +14,7 @@ from numpy import pi, loadtxt, savetxt, nditer, empty, array #for loadidng the f
 f_base=5e5 #the modulation frequency, the base frequency of the sine signal
 A_base=0.05 #the expected amplitude of the singal
 omega_base = f_base * 2 * pi #base angula frequency of the sine signal
-input_fname='data/160833/ch1.csv'#file with the sine signal
+input_fname='data/160833/ch1.csv'#file with the sine signal, shot 5745 #FIXME this shot has no other DAS data
 output_fname="phase-roots.csv"
 debug=True
 
