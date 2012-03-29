@@ -72,8 +72,7 @@ w_base = pi / D_root
 
 while not iterator.finished:
     iterator[1] = (t_expected - iterator[0]) * w_base
-    if iterator[0] - t_expected > 0:
-        t_expected += D_root
+    t_expected += D_root * int((iterator[0] - t_expected ) / D_root) #add the right number of D_roots a there could have been some weird phase shift
     iterator.iternext()
 
 ################ SECOND PASS ################
