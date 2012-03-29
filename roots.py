@@ -27,6 +27,7 @@ output_file = open(output_fname, 'w')
 if globals().has_key('x'): #want to load data only once, so let's check if it's defined
     print "Data have been loaded already"
 else: #first run in session, must load data
+    print "Loading data"
     x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
     print "Data loaded"
 
