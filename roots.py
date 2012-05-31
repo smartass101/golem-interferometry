@@ -74,11 +74,25 @@ dt = diff(roots) # time steps
 w = pi / dt # calculate angular frequencies (1. derivation of phase)
 dt = dt[1:] # not using first time step anymore
 eps = diff(w) / dt # calculate rate of change of ang. freq. (2. derivation of phase)
-
-phase = cumsum(cumsum(eps) * dt) * dt #double integral to get phase
+w_integr = cumsum(eps) * dt
+phase = cumsum(w_integr) * dt #double integral to get phase
 
 output_file.close()
 
 import matplotlib.pylab as plt
+axes = plt.subplot(511)
+plt.title("Angular frequency (1.derivation of phase)")
+plt.plot(roots[1:], w)
+axes = plt.subplot(512, sharex=axes)
+plt.title("Frequency")
+plt.plot(roots[1:], w/2/pi) #frequency
+axes = plt.subplot(513, sharex=axes)
+plt.title("Rate of chagne of ang. freq. (2. derivation of phase")
+plt.plot(roots[2:], eps)
+axes = plt.subplot(514, sharex=axes)
+plt.title("Integrated ang. freq.")
+plt.plot(roots[2:], w_integr)
+axes = plt.subplot(515, sharex=axes)
+plt.title("Integrated phase")
 plt.plot(roots[2:], phase)
 plt.show()
