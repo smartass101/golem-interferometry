@@ -74,8 +74,8 @@ dt = diff(roots) # time steps
 w = pi / dt # calculate angular frequencies (1. derivation of phase)
 dt = dt[1:] # not using first time step anymore
 eps = diff(w) / dt # calculate rate of change of ang. freq. (2. derivation of phase)
-w_integr = cumsum(eps) * dt
-phase = cumsum(w_integr) * dt #double integral to get phase
+w_integr = cumsum(eps * dt)
+phase = cumsum(w_integr * dt) #double integral to get phase
 
 output_file.close()
 
