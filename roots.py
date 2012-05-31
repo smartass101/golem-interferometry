@@ -17,6 +17,7 @@ omega_base = f_base * 2 * pi #base angula frequency of the sine signal
 input_fname='data/160833/ch1.csv'#file with the sine signal, shot 5745 #FIXME this shot has no other DAS data
 output_fname="phase-roots.csv"
 debug=True
+target_sampling_f=25e6 #frequency at which it's the easiest to calculate the roots
 
 ################################################################
 ####              FILE OPENING AND DATA LOADING             ####
@@ -36,6 +37,11 @@ else: #first run in session, must load data
 ################################################################
 
 dt=x[1] - x[0] #calculate the time step
+if 1/dt > target_sampling_f: #not the right sampling, resample
+    resampler = (1 / dt) / target_sampling_f
+    x = x[::resampler]
+    y = y[::resampler]
+    dt *= resampler
 max_distance = 1 / f_base /8 # minimum distance of roots, as a fraction of the period length
 
 ################################################################
