@@ -23,12 +23,12 @@ target_sampling_f=25e6 #frequency at which it's the easiest to calculate the roo
 ####              FILE OPENING AND DATA LOADING             ####
 ################################################################
 
-data_file=open(input_fname, 'r') #open data file read-only
 output_file = open(output_fname, 'w')
 if globals().has_key('x'): #want to load data only once, so let's check if it's defined
     print "Data have been loaded already"
 else: #first run in session, must load data
     print "Loading data"
+    data_file=open(input_fname, 'r') #open data file read-only
     x, y=loadtxt(data_file, delimiter=',', unpack=True) #load and unpack the data
     print "Data loaded"
 
