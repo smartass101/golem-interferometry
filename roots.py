@@ -77,7 +77,6 @@ eps = diff(w) / dt # calculate rate of change of ang. freq. (2. derivation of ph
 
 phase = cumsum(cumsum(eps) * dt) * dt #double integral to get phase
 
-data_file.close()
 output_file.close()
 
 import matplotlib.pylab as plt
