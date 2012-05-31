@@ -70,29 +70,12 @@ roots = array(roots)
 ####                 DATA GENERATION                        ####
 ################################################################
 
-################ FIRST PASS ################
-D_root = (roots[-1] - roots[0]) / roots.size#better approximation
-phase = empty(len(roots) - 2)
-iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
-t_expected = roots[1] + D_root
-w_base = pi / D_root
+dt = diff(roots) # time steps
+w = pi / dt # calculate angular frequencies (1. derivation of phase)
+dt = dt[1:] # not using first time step anymore
+eps = diff(w) / dt # calculate rate of change of ang. freq. (2. derivation of phase)
 
-while not iterator.finished:
-    iterator[1] = (t_expected - iterator[0]) * w_base
-    t_expected += D_root * int((iterator[0] - t_expected ) / D_root) #add the right number of D_roots a there could have been some weird phase shift
-    iterator.iternext()
-
-################ SECOND PASS ################
-edge = int(3e-3 / D_root) #expecting no plasma up to 3 ms
-w_extra = (phase[edge] - phase[0]) / (roots[edge] - roots[2])
-phase_0 = roots[2] * w_extra
-phase -= roots[2:] * w_extra - phase_0 #easier
-iterator = nditer((roots[2:], phase), ['c_index'], [['readonly'], ['readwrite']])
-while not iterator.finished:
-    #iterator[1] += iterator[0] * w_base - phase_0
-    #output_file.write("{},{}\n".format(iterator[0], iterator[1]))
-    iterator.iternext()
-
+phase = cumsum(cumsum(eps) * dt) * dt #double integral to get phase
 
 data_file.close()
 output_file.close()
