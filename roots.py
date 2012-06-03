@@ -49,26 +49,25 @@ max_distance = 1 / f_base /8 # minimum distance of roots, as a fraction of the p
 ################################################################
 discard_close_roots = True
 roots = [] #root array
-window_width = 100
+window_width = 20
 mov_avg_array = empty(len(x) - window_width)
-iterator = nditer((x[window_width:], y[window_width:], y[:-window_width], mov_avg_array), ['reduce_ok'], [['readonly'],['readonly'],['readonly'],['readwrite']]) #generate an iterator object that will store the index in C order
-mov_avg = y[:window_width].mean()
+iterator = nditer((x[window_width:], y[window_width:], y[:-window_width])) #generate an iterator object that will store the index in C order
+mov_avg = mov_avg_last = y[:window_width].mean()
 
 x_last = x[0]
 y_last = y[0]
-mov_avg = []
 root = 0
 root_last = x[0] * 4
 while not iterator.finished:
-    mov_avg += (iterator[1] - iterator[2]) / window_width
-    iterator[3] = mov_avg
-    if mov_avg == 0:#root found
+    mov_avg = mov_avg_last + (iterator[1] - iterator[2]) / window_width
+    if mov_avg * mov_avg_last <= 0:#root found
         root = iterator[0] - window_width / 2 * dt
         if discard_close_roots and root - root_last < max_distance: #too close (bad data sample)
             roots[-1] = (root + root_last) / 2 #recalculate the root
         else:
             roots.append(root)
         root_last = root
+    mov_avg_last = mov_avg
     iterator.iternext()
 roots = array(roots)
 
