@@ -14,7 +14,7 @@ from numpy import pi, loadtxt, savetxt, nditer, empty, array #for loadidng the f
 f_base=5e5 #the modulation frequency, the base frequency of the sine signal
 A_base=0.05 #the expected amplitude of the singal
 omega_base = f_base * 2 * pi #base angula frequency of the sine signal
-input_fname='data/160833/ch1.csv'#file with the sine signal, shot 5745 #FIXME this shot has no other DAS data
+input_fname='8733/ch1.csv'#file with the sine signal, shot 5745 #FIXME this shot has no other DAS data
 output_fname="phase-roots.csv"
 debug=True
 target_sampling_f=25e6 #frequency at which it's the easiest to calculate the roots
@@ -37,7 +37,7 @@ else: #first run in session, must load data
 ################################################################
 
 dt=x[1] - x[0] #calculate the time step
-if 1/dt > target_sampling_f: #not the right sampling, resample
+if False and 1/dt > target_sampling_f: #not the right sampling, resample
     resampler = (1 / dt) / target_sampling_f
     x = x[::resampler]
     y = y[::resampler]
@@ -49,20 +49,26 @@ max_distance = 1 / f_base /8 # minimum distance of roots, as a fraction of the p
 ################################################################
 discard_close_roots = True
 roots = [] #root array
-iterator = nditer((x[1:], y[1:]), flags=['c_index']) #generate an iterator object that will store the index in C order
+window_width = 100
+mov_avg_array = empty(len(x) - window_width)
+iterator = nditer((x[window_width:], y[window_width:], y[:-window_width], mov_avg_array), ['reduce_ok'], [['readonly'],['readonly'],['readonly'],['readwrite']]) #generate an iterator object that will store the index in C order
+mov_avg = y[:window_width].mean()
+
 x_last = x[0]
 y_last = y[0]
+mov_avg = []
 root = 0
 root_last = x[0] * 4
 while not iterator.finished:
-    if iterator[1] * y_last <= 0:#root found 
-        root = iterator[0] - iterator[1] * (iterator[0] - x_last) / (iterator[1] - y_last) #calculate the precise root in between through the secant method
+    mov_avg += (iterator[1] - iterator[2]) / window_width
+    iterator[3] = mov_avg
+    if mov_avg == 0:#root found
+        root = iterator[0] - window_width / 2 * dt
         if discard_close_roots and root - root_last < max_distance: #too close (bad data sample)
             roots[-1] = (root + root_last) / 2 #recalculate the root
         else:
             roots.append(root)
         root_last = root
-    x_last, y_last = iterator[0], iterator[1]#:2]
     iterator.iternext()
 roots = array(roots)
 
